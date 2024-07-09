@@ -3,8 +3,8 @@ package cmd
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/joaoferreiravnf/myShoppingApp.git/config"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/auth"
-	"github.com/joaoferreiravnf/myShoppingApp.git/internal/config"
 	"github.com/joho/godotenv"
 	"log"
 )
