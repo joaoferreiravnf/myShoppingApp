@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// MarketItem is the struct for the market item
 type MarketItem struct {
 	Name     string    `db:"name"`
 	Quantity int       `db:"qty"`

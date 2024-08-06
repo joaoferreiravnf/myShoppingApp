@@ -8,8 +8,9 @@ import (
 	"os"
 )
 
+// ConnectToDatabase opens a new connection to the database
 func ConnectToDatabase() (*sql.DB, error) {
-	dbHost, dbUser, dbPassword, dbName := GetEnvVariables()
+	dbHost, dbUser, dbPassword, dbName := getEnvVariables()
 
 	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName)
 
@@ -20,7 +21,7 @@ func ConnectToDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
-func GetEnvVariables() (string, string, string, string) {
+func getEnvVariables() (string, string, string, string) {
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")

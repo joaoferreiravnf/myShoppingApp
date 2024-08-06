@@ -5,11 +5,14 @@ import (
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/models"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/repository"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 	"log"
 	"time"
 )
 
 func main() {
+	e := echo.New()
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
@@ -17,10 +20,12 @@ func main() {
 
 	dbConn, err := config.ConnectToDatabase()
 	if err != nil {
-		log.Fatal(err)
+		e.Logger.Fatal(err)
 	}
 
-	defer dbConn.Close()
+	newRepo := repository.NewItemsRepository(dbConn)
+
+	e.GET("/items",
 
 	item := models.MarketItem{
 		Name:     "Apple",
@@ -31,9 +36,7 @@ func main() {
 		AddedBy:  "John Doe",
 	}
 
-	newRepo := repository.NewRepository(dbConn)
-
-	err = newRepo.CreateUser(item)
+	err = newRepo.CreateItem(item)
 	if err != nil {
 		log.Fatal(err)
 	}
