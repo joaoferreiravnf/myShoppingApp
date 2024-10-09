@@ -23,7 +23,7 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	newRepo := repository.NewItemsRepository(dbConn)
+	newRepo := repository.NewPostgresqlDb(dbConn)
 
 	e.GET("/items",
 
