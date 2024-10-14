@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"log"
+	"os"
 	"time"
 )
 
@@ -23,11 +24,14 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	newRepo := repository.NewPostgresqlDb(dbConn)
+	dbName := os.Getenv("DB_NAME")
+	dbTable := os.Getenv("DB_TABLE")
 
-	e.GET("/items",
+	newRepo := repository.NewPostgresqlDb(dbConn, dbName, dbTable)
 
-	item := models.MarketItem{
+	e.GET("/items")
+
+	item := models.Item{
 		Name:     "Apple",
 		Quantity: 5,
 		Type:     "Fruit",

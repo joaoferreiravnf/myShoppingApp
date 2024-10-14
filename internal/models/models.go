@@ -2,8 +2,9 @@ package models
 
 import "time"
 
-// MarketItem is the struct for the market item
-type MarketItem struct {
+// Item is the struct for the market item
+type Item struct {
+	ID       int       `db:"id"`
 	Name     string    `db:"name"`
 	Quantity int       `db:"qty"`
 	Type     string    `db:"type"`
