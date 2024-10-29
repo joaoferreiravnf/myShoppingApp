@@ -20,7 +20,7 @@ func TestNormalizeStringForPersistence(t *testing.T) {
 
 	for _, tc := range testCases {
 		item.Name = tc.UiName
-		item.NormalizeStringForPersistence()
+		item.NormalizeNameForPersistence()
 		assert.Equal(t, tc.dbName, item.Name)
 	}
 }
@@ -39,7 +39,7 @@ func TestNormalizeStringForUI(t *testing.T) {
 
 	for _, tc := range testCases {
 		item.Name = tc.UiName
-		item.NormalizeStringForUI()
+		item.NormalizeNameForUI()
 		assert.Equal(t, tc.UiName, item.Name)
 	}
 }

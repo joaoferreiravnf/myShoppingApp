@@ -17,13 +17,13 @@ type Item struct {
 	AddedBy  string    `db:"added_by"`
 }
 
-func (i *Item) NormalizeStringForPersistence() {
+func (i *Item) NormalizeNameForPersistence() {
 	i.Name = strings.TrimSpace(i.Name)
 	i.Name = strings.ToLower(i.Name)
 	i.Name = strings.ReplaceAll(i.Name, " ", "_")
 }
 
-func (i *Item) NormalizeStringForUI() {
+func (i *Item) NormalizeNameForUI() {
 	i.Name = strings.ReplaceAll(i.Name, "_", " ")
 
 	uiName := strings.Fields(i.Name)
