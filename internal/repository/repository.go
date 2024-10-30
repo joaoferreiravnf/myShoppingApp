@@ -9,29 +9,29 @@ import (
 type Repository interface {
 	CreateItem(item models.Item) error
 	ListItems() ([]models.Item, error)
-	DeleteItem(name string) error
+	DeleteItem(id int) error
 	EditItem(item models.Item) error
 }
 
 // PostgresqlDb is the current db concrete implementation
 type PostgresqlDb struct {
-	db      *sql.DB
-	dbName  string
-	dbTable string
+	db       *sql.DB
+	dbSchema string
+	dbTable  string
 }
 
 // NewPostgresqlDb creates a new PostgresqlDb instance
-func NewPostgresqlDb(db *sql.DB, dbName, dbTable string) *PostgresqlDb {
+func NewPostgresqlDb(db *sql.DB, dbSchema, dbTable string) *PostgresqlDb {
 	return &PostgresqlDb{
-		db:      db,
-		dbName:  dbName,
-		dbTable: dbTable,
+		db:       db,
+		dbSchema: dbSchema,
+		dbTable:  dbTable,
 	}
 }
 
 // CreateItem creates a new item in the database
 func (ir *PostgresqlDb) CreateItem(item models.Item) error {
-	query := fmt.Sprintf("INSERT INTO %s.%s (name, qty, type, market, date, added_by) VALUES ($1, $2, $3, $4, $5, $6)", ir.dbName, ir.dbTable)
+	query := fmt.Sprintf("INSERT INTO %s.%s (name, qty, type, market, added_at, added_by) VALUES ($1, $2, $3, $4, $5, $6)", ir.dbSchema, ir.dbTable)
 
 	_, err := ir.db.Exec(query, item.Name, item.Quantity, item.Type, item.Market, item.AddedAt, item.AddedBy)
 
@@ -43,7 +43,7 @@ func (ir *PostgresqlDb) CreateItem(item models.Item) error {
 }
 
 func (ir *PostgresqlDb) ListItems() ([]models.Item, error) {
-	rows, err := ir.db.Query(fmt.Sprintf("SELECT * FROM %s.%s"), ir.dbName, ir.dbTable)
+	rows, err := ir.db.Query(fmt.Sprintf("SELECT * FROM %s.%s"), ir.dbSchema, ir.dbTable)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (ir PostgresqlDb) EditItem(item models.Item) error {
 }
 
 func (ir PostgresqlDb) DeleteItem(id int) error {
-	query := fmt.Sprintf("DELETE FROM %s.%s WHERE id=$1", ir.dbName, ir.dbTable)
+	query := fmt.Sprintf("DELETE FROM %s.%s WHERE id=$1", ir.dbSchema, ir.dbTable)
 
 	_, err := ir.db.Exec(query, id)
 

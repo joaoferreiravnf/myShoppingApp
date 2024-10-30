@@ -25,21 +25,22 @@ func TestNormalizeStringForPersistence(t *testing.T) {
 	}
 }
 
-func TestNormalizeStringForUI(t *testing.T) {
+func TestNormalizeNameForPersistence(t *testing.T) {
 	item := Item{}
 	testCases := []struct {
+		uiName string
 		dbName string
-		UiName string
 	}{
-		{"red_markers", "Red Markers"},
+		{"Red markers", "Red Markers"},
 		{"markers", "Markers"},
 		{"", ""},
-		{"_blaCK_marKErs_", "Black Markers"},
+		{"marKERS", "Markers"},
+		{" marKers", "Markers"},
 	}
 
 	for _, tc := range testCases {
-		item.Name = tc.UiName
-		item.NormalizeNameForUI()
-		assert.Equal(t, tc.UiName, item.Name)
+		item.Name = tc.dbName
+		item.NormalizeNameForPersistence()
+		assert.Equal(t, tc.dbName, item.Name)
 	}
 }

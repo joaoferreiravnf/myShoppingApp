@@ -13,18 +13,13 @@ type Item struct {
 	Quantity int       `db:"qty"`
 	Type     string    `db:"type"`
 	Market   string    `db:"market"`
-	AddedAt  time.Time `db:"date"`
+	AddedAt  time.Time `db:"added_at"`
 	AddedBy  string    `db:"added_by"`
 }
 
 func (i *Item) NormalizeNameForPersistence() {
-	i.Name = strings.TrimSpace(i.Name)
-	i.Name = strings.ToLower(i.Name)
-	i.Name = strings.ReplaceAll(i.Name, " ", "_")
-}
-
-func (i *Item) NormalizeNameForUI() {
 	i.Name = strings.ReplaceAll(i.Name, "_", " ")
+	i.Name = strings.ToLower(i.Name)
 
 	uiName := strings.Fields(i.Name)
 
