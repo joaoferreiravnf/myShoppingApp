@@ -1,36 +1,40 @@
 package repository
 
 import (
+	"context"
+	"github.com/golang/mock/gomock"
+	"github.com/joaoferreiravnf/myShoppingApp.git/internal/mocks"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/models"
+	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
-
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateItem(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// Mock expected behavior
-	mock.ExpectExec("INSERT INTO schema.table").
-		WithArgs("aPPle", 5, "Fruit", "Local Market", sqlmock.AnyArg(), "John").
-		WillReturnResult(sqlmock.NewResult(1, 1))
+	// Create a mock DBExecutor
+	mockDB := mocks.NewMockDBExecutor(ctrl)
 
-	repo := NewPostgresqlDb(db, "schema", "table")
+	// Define repository with mock
+	repo := NewPostgresqlDb(mockDB, "public", "shopping_items")
 
 	item := models.Item{
-		Name:     "aPPle",
-		Quantity: 5,
-		Type:     "Fruit",
-		Market:   "Local Market",
+		Name:     "Test Item",
+		Quantity: 3,
+		Type:     "Grocery",
+		Market:   "Test Market",
 		AddedAt:  time.Now(),
-		AddedBy:  "John",
+		AddedBy:  "Tester",
 	}
 
-	err = repo.CreateItem(item)
-	assert.NoError(t, err)
-	assert.NoError(t, mock.ExpectationsWereMet())
+	// Set expectation for ExecContext on the mock
+	mockDB.EXPECT().
+		ExecContext(gomock.Any(), gomock.Any(), item.Name, item.Quantity, item.Type, item.Market, item.AddedAt, item.AddedBy).
+		Return(nil, nil) // Mock the successful return
+
+	// Call CreateItem and verify
+	err := repo.CreateItem(context.Background(), item)
+	require.NoError(t, err, "expected no error when creating item")
 }

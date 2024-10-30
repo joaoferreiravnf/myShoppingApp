@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/config"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/repository"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	err := godotenv.Load()
 	if err != nil {
@@ -41,7 +45,14 @@ func main() {
 			c.Logger.Fatal(err)
 		}*/
 
-	err = newRepo.DeleteItem(10)
+	items, err := newRepo.ListItems(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	items[0].Name = "New"
+
+	err = newRepo.UpdateItem(ctx, items[0])
 	if err != nil {
 		log.Fatal(err)
 	}
