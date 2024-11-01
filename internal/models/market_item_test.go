@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestNormalizeStringForPersistence(t *testing.T) {
+func TestNormalizeFieldsForPersistence(t *testing.T) {
 	item := Item{}
 	testCases := []struct {
 		UiName string
@@ -20,7 +20,8 @@ func TestNormalizeStringForPersistence(t *testing.T) {
 
 	for _, tc := range testCases {
 		item.Name = tc.UiName
-		item.NormalizeNameForPersistence()
+		err := item.NormalizeFieldsForPersistence()
+		assert.NoError(t, err)
 		assert.Equal(t, tc.dbName, item.Name)
 	}
 }
@@ -40,7 +41,7 @@ func TestNormalizeNameForPersistence(t *testing.T) {
 
 	for _, tc := range testCases {
 		item.Name = tc.dbName
-		item.NormalizeNameForPersistence()
+		item.NormalizeFieldsForPersistence()
 		assert.Equal(t, tc.dbName, item.Name)
 	}
 }
