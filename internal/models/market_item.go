@@ -7,6 +7,8 @@ import (
 	"unicode"
 )
 
+// TODO: Consider imterface implementation for future structs (multiuse app)
+
 // Item is the struct for the market item
 type Item struct {
 	ID       int       `db:"id"`

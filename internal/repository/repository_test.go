@@ -117,10 +117,5 @@ func TestPostgresqlDb_DeleteItem(t *testing.T) {
 }
 
 func TestPostgresqlDb_UpdateItem(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
-	mockDB := mocks.NewMockDBExecutor(ctrl)
-	ctx := context.Background()
-	repo := NewPostgresqlDb(mockDB, "public", "shopping_items")
 }

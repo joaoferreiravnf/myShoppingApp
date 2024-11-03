@@ -8,19 +8,15 @@ import (
 
 func TestNormalizeFieldsForPersistence(t *testing.T) {
 	t.Run("successful fields normalization", func(t *testing.T) {
-		items := []Item{
-			{Name: " aPple ", Quantity: 10, Type: " frUitS ", Market: " Test market ", AddedAt: time.Now(), AddedBy: " John "},
-		}
+		item := Item{Name: " aPple ", Quantity: 10, Type: " frUitS ", Market: " Test market ", AddedAt: time.Now(), AddedBy: " John "}
 
-		for _, item := range items {
-			err := item.NormalizeFieldsForPersistence()
-			assert.NoError(t, err)
-			assert.Equal(t, "Apple", item.Name)
-			assert.Equal(t, 10, item.Quantity)
-			assert.Equal(t, "Fruits", item.Type)
-			assert.Equal(t, "Test Market", item.Market)
-			assert.Equal(t, "John", item.AddedBy)
-		}
+		err := item.NormalizeFieldsForPersistence()
+		assert.NoError(t, err)
+		assert.Equal(t, "Apple", item.Name)
+		assert.Equal(t, 10, item.Quantity)
+		assert.Equal(t, "Fruits", item.Type)
+		assert.Equal(t, "Test Market", item.Market)
+		assert.Equal(t, "John", item.AddedBy)
 	})
 	t.Run("failed fields normalization due to empty fields", func(t *testing.T) {
 		item := Item{}

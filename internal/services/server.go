@@ -1,31 +1,27 @@
 package services
 
 import (
-	"database/sql"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/repository"
 	"github.com/labstack/echo/v4"
 )
 
 type AppServer struct {
 	*echo.Echo
-	repo *repository.postgresqlDb
+	repo *repository.PostgresqlDb
 }
 
-func NewAppServer(repo *repository.postgresqlDb, db *sql.DB) *AppServer {
+func NewAppServer(repo *repository.PostgresqlDb) *AppServer {
 	e := echo.New()
 
 	s := &AppServer{e, repo}
 
-	e.GET("/items", s.listItems)
-
 	return s
 }
 
-func (s *AppServer) listItems(c echo.Context) error {
-	items, err := s.repo.ListItems()
-	if err != nil {
-		return c.JSON(500, "An error occurred while fetching the items")
-	}
+func StartServer() {
+	e := echo.New()
 
-	return c.JSON(200, items)
+	Register(e)
+
+	e.Logger.Fatal(e.Start(":8080"))
 }
