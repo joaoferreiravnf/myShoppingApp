@@ -14,7 +14,7 @@ func TestNormalizeFieldsForPersistence(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "Apple", item.Name)
 		assert.Equal(t, 10, item.Quantity)
-		assert.Equal(t, "Fruits", item.Type)
+		assert.Equal(t, "fruits", item.Type)
 		assert.Equal(t, "Test Market", item.Market)
 		assert.Equal(t, "John", item.AddedBy)
 	})

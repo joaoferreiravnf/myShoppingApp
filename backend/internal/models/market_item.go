@@ -9,20 +9,22 @@ import (
 )
 
 const (
-	Continente = "Continente"
-	Lidl       = "Lidl"
-	Belita     = "Belita"
-	PingoDoce  = "Pingo Doce"
-	Jumbo      = "Jumbo"
+	continente = "Continente"
+	lidl       = "Lidl"
+	belita     = "Belita"
+	pingoDoce  = "Pingo Doce"
+	jumbo      = "Jumbo"
 )
 
 const (
-	Fruits      = "Frutas"
-	Vegetables  = "Legumes"
-	MeatAndFish = "Carne & Peixe"
-	Drinks      = "Bebidas"
-	Higiene     = "Higiene"
+	fruits      = "Frutas"
+	vegetables  = "Legumes"
+	meatAndFish = "Carne & Peixe"
+	drinks      = "Bebidas"
+	higiene     = "Higiene"
 )
+
+const itemQuantities = 10
 
 // TODO: Consider imterface implementation for future structs (multiuse app)
 
@@ -89,18 +91,19 @@ func normalizeMandatoryStrings(str string) (string, error) {
 }
 
 type ListItemsData struct {
-	Items   []Item
-	Markets []string
-	Types   []string
+	Items      []Item
+	Markets    []string
+	Types      []string
+	Quantities []int
 }
 
 func (lid *ListItemsData) GetMarkets() {
 	markets := []string{
-		Continente,
-		Belita,
-		PingoDoce,
-		Jumbo,
-		Lidl,
+		continente,
+		belita,
+		pingoDoce,
+		jumbo,
+		lidl,
 	}
 
 	slices.Sort(markets)
@@ -110,12 +113,22 @@ func (lid *ListItemsData) GetMarkets() {
 
 func (lid *ListItemsData) GetTypes() {
 	types := []string{
-		Fruits,
-		Vegetables,
-		MeatAndFish,
-		Drinks,
-		Higiene,
+		fruits,
+		vegetables,
+		meatAndFish,
+		drinks,
+		higiene,
 	}
 
 	lid.Types = types
+}
+
+func (lid *ListItemsData) GetQuantities() {
+	var quantities []int
+
+	for i := 1; i <= itemQuantities; i++ {
+		quantities = append(quantities, i)
+	}
+
+	lid.Quantities = quantities
 }

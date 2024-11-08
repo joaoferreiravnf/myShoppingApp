@@ -31,7 +31,8 @@ func NewAppServer(repo *repository.PostgresqlDb) *AppServer {
 
 	itemGroup := newEcho.Group("/items")
 	itemGroup.GET("", newServer.ListItems)
-	itemGroup.POST("", newServer.CreateItem)
+	itemGroup.POST("/create", newServer.CreateItem)
+	itemGroup.POST("/delete/:id", newServer.DeleteItem)
 
 	return newServer
 }
@@ -60,6 +61,7 @@ func (s *AppServer) ListItems(c echo.Context) error {
 
 	listData.GetTypes()
 	listData.GetMarkets()
+	listData.GetQuantities()
 
 	return c.Render(http.StatusOK, "list_items.html", listData)
 }
@@ -86,6 +88,25 @@ func (s *AppServer) CreateItem(c echo.Context) error {
 	err = s.repo.CreateItem(c.Request().Context(), newItem)
 	if err != nil {
 		return errors.Wrap(err, "error creating new item")
+	}
+
+	return c.Redirect(http.StatusSeeOther, "/items")
+}
+
+func (s *AppServer) DeleteItem(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return errors.Wrap(err, "error converting id field to int")
+	}
+
+	item := models.Item{
+		ID:   id,
+		Name: c.FormValue("name"),
+	}
+
+	err = s.repo.DeleteItem(c.Request().Context(), item)
+	if err != nil {
+		return errors.Wrap(err, "error deleting item")
 	}
 
 	return c.Redirect(http.StatusSeeOther, "/items")

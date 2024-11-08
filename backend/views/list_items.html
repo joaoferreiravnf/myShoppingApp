@@ -23,7 +23,7 @@
     </thead>
     <tbody>
     <!-- Display existing items -->
-    {{range .}}
+    {{range .Items}}
     <tr>
         <td>{{.Name}}</td>
         <td>{{.Quantity}}</td>
@@ -32,6 +32,7 @@
         <td>{{.AddedAt}}</td>
         <td>{{.AddedBy}}</td>
         <td>
+            <a href="/items/edit/{{.ID}}" class="btn btn-sm btn-warning">Edit</a>
             <form action="/items/delete/{{.ID}}" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
             </form>
@@ -40,18 +41,42 @@
     {{end}}
 
     <!-- Empty row for adding new item -->
-    <form action="/items" method="POST">
-        <tr>
-            <td><input type="text" name="name" class="form-control" placeholder="Name" required></td>
-            <td><input type="number" name="quantity" class="form-control" placeholder="Quantity" required></td>
-            <td><input type="text" name="type" class="form-control" placeholder="Type" required></td>
-            <td><input type="text" name="market" class="form-control" placeholder="Market" required></td>
-            <td>N/A</td>
-            <td><input type="text" name="added_by" class="form-control" placeholder="AddedBy" required></td>
-            <td>
-                <button type="submit" class="btn btn-sm btn-success">Save</button>
-            </td>
-        </tr>
+    <form action="/items/create" method="POST">
+        <table class="table table-striped table-hover">
+            <tbody>
+            <!-- Existing rows of items would go here -->
+            <!-- New item input row -->
+            <tr>
+                <td><input type="text" name="name" class="form-control" placeholder="Name" required></td>
+                <td>
+                    <select name="quantity" class="form-control" required>
+                        {{range .Quantities}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                </td>
+                <td>
+                    <select name="type" class="form-control" required>
+                        {{range .Types}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                </td>
+                <td>
+                    <select name="market" class="form-control" required>
+                        {{range .Markets}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                </td>
+                <td>N/A</td>
+                <td><input type="text" name="added_by" class="form-control" placeholder="Added By" required></td>
+                <td>
+                    <button type="submit" class="btn btn-sm btn-success">Save</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </form>
     </tbody>
 </table>

@@ -91,7 +91,7 @@ func (ir PostgresqlDb) DeleteItem(ctx context.Context, item models.Item) error {
 
 	_, err := ir.db.ExecContext(ctx, query, item.ID)
 	if err != nil {
-		return errors.Wrapf(err, "error deleting item %s with id %d", item.Name, item.ID)
+		return errors.Wrapf(err, "error deleting item %s with id %d from database", item.Name, item.ID)
 	}
 
 	return nil
