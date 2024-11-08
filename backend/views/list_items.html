@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container">
+<h1 class="mt-4">Items</h1>
+
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Type</th>
+        <th>Market</th>
+        <th>Added At</th>
+        <th>Added By</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Display existing items -->
+    {{range .}}
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Quantity}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.Market}}</td>
+        <td>{{.AddedAt}}</td>
+        <td>{{.AddedBy}}</td>
+        <td>
+            <form action="/items/delete/{{.ID}}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {{end}}
+
+    <!-- Empty row for adding new item -->
+    <form action="/items" method="POST">
+        <tr>
+            <td><input type="text" name="name" class="form-control" placeholder="Name" required></td>
+            <td><input type="number" name="quantity" class="form-control" placeholder="Quantity" required></td>
+            <td><input type="text" name="type" class="form-control" placeholder="Type" required></td>
+            <td><input type="text" name="market" class="form-control" placeholder="Market" required></td>
+            <td>N/A</td>
+            <td><input type="text" name="added_by" class="form-control" placeholder="AddedBy" required></td>
+            <td>
+                <button type="submit" class="btn btn-sm btn-success">Save</button>
+            </td>
+        </tr>
+    </form>
+    </tbody>
+</table>
+</body>
+</html>
