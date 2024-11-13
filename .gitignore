@@ -1,4 +1,4 @@
-backend/.env
+.env
 .DS_Store
 .idea/
 projectRequirments.txt
