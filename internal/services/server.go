@@ -1,6 +1,8 @@
 package services
 
 import (
+	"crypto/subtle"
+	"github.com/joaoferreiravnf/myShoppingApp.git/internal/config"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/models"
 	"github.com/joaoferreiravnf/myShoppingApp.git/internal/repository"
 	"github.com/labstack/echo/v4"
@@ -13,25 +15,32 @@ import (
 )
 
 type AppServer struct {
-	*echo.Echo
-	repo *repository.PostgresqlDb
+	echo   *echo.Echo
+	repo   *repository.PostgresqlDb
+	config *config.Config
 }
 
-func NewAppServer(repo *repository.PostgresqlDb) *AppServer {
+func NewAppServer(repo *repository.PostgresqlDb, configs *config.Config) *AppServer {
 	newEcho := echo.New()
-	newEcho.Use(middleware.CORS())
-	newServer := &AppServer{newEcho, repo}
+
+	newServer := &AppServer{
+		newEcho,
+		repo,
+		configs,
+	}
 
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.ParseGlob("views/*.html")),
 	}
-	newServer.Echo.Renderer = renderer
+	newServer.echo.Renderer = renderer
 
-	newEcho.HTTPErrorHandler = customErrorHandler
+	newServer.echo.HTTPErrorHandler = customErrorHandler
 
-	newEcho.Use(middleware.Logger())
+	newServer.echo.Use(middleware.Logger())
+	basicAuth := newServer.basicAuth()
 
-	itemGroup := newEcho.Group("/items")
+	itemGroup := newServer.echo.Group("/items", basicAuth...)
+
 	itemGroup.GET("", newServer.ListItems)
 	itemGroup.POST("/create", newServer.CreateItem)
 	itemGroup.POST("/delete/:id", newServer.DeleteItem)
@@ -39,9 +48,29 @@ func NewAppServer(repo *repository.PostgresqlDb) *AppServer {
 	return newServer
 }
 
+func (s *AppServer) basicAuth() []echo.MiddlewareFunc {
+	return []echo.MiddlewareFunc{
+		middleware.BasicAuth(func(username, password string, _ echo.Context) (bool, error) {
+			if subtle.ConstantTimeCompare([]byte(username), []byte(s.config.AppAuth.Username)) == 1 &&
+				subtle.ConstantTimeCompare([]byte(password), []byte(s.config.AppAuth.Password)) == 1 {
+				return true, nil
+			}
+			return false, nil
+		}),
+	}
+}
+
 func customErrorHandler(err error, c echo.Context) {
 	code := http.StatusInternalServerError
 	message := err.Error()
+
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+	}
+
+	if code == http.StatusUnauthorized {
+		c.Response().Header().Set(echo.HeaderWWWAuthenticate, `Basic realm="Restricted"`)
+	}
 
 	c.Render(code, "error.html", map[string]interface{}{
 		"status":  "error",
@@ -58,13 +87,13 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 }
 
 func (s *AppServer) StartServer() {
-	s.Logger.Fatal(s.Start(":8080"))
+	s.echo.Logger.Fatal(s.echo.Start(":8080"))
 }
 
 func (s *AppServer) ListItems(c echo.Context) error {
 	items, err := s.repo.ListItems(c.Request().Context())
 	if err != nil {
-		return errors.Wrap(err, "error listing items from database")
+		return errors.Wrap(err, "error listing items")
 	}
 
 	listData := models.ListItemsData{

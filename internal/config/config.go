@@ -6,14 +6,49 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
-	"os"
+	"gopkg.in/yaml.v3"
+	"os/exec"
 )
 
-// ConnectToDatabase opens a new connection to the database
-func ConnectToDatabase() (*sql.DB, error) {
-	dbHost, dbUser, dbPort, dbName := getEnvVariables()
+type Config struct {
+	AppAuth        `yaml:"app_auth"`
+	DatabaseConfig `yaml:"db"`
+	GoogleAuth     `yaml:"google_auth"`
+}
 
-	connStr := fmt.Sprintf("host=%s user=%s port=%s dbname=%s sslmode=disable", dbHost, dbUser, dbPort, dbName)
+type AppAuth struct {
+	Username string `yaml:"app_user"`
+	Password string `yaml:"app_pass"`
+}
+
+type DatabaseConfig struct {
+	Host     string `yaml:"db_host"`
+	Port     int    `yaml:"db_port"`
+	User     string `yaml:"db_user"`
+	Password string `yaml:"db_password"`
+	Name     string `yaml:"db_name"`
+	Schema   string `yaml:"db_schema"`
+	Table    string `yaml:"db_table"`
+}
+
+func LoadConfigs(filePath string) (*Config, error) {
+	cmd := exec.Command("sops", "-d", filePath)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decrypt secrets with sops")
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(output, &config); err != nil {
+		return nil, errors.Wrap(err, "failed to parse decrypted YAML")
+	}
+
+	return &config, nil
+}
+
+// ConnectToDatabase opens a new connection to the database
+func ConnectToDatabase(config DatabaseConfig) (*sql.DB, error) {
+	connStr := fmt.Sprintf("host=%s user=%s password=%s port=%d dbname=%s sslmode=disable", config.Host, config.User, config.Password, config.Port, config.Name)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -22,11 +57,7 @@ func ConnectToDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
-func getEnvVariables() (string, string, string, string) {
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	return dbHost, dbUser, dbPort, dbName
+type GoogleAuth struct {
+	ID     string
+	Secret string
 }

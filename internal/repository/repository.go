@@ -72,7 +72,7 @@ func (ir *PostgresqlDb) ListItems(ctx context.Context) ([]models.Item, error) {
 	return items, nil
 }
 
-func (ir PostgresqlDb) UpdateItem(ctx context.Context, item models.Item) error {
+func (ir *PostgresqlDb) UpdateItem(ctx context.Context, item models.Item) error {
 	query := fmt.Sprintf(`UPDATE %s.%s SET name = $1, qty = $2, type = $3, market = $4, added_at = $5, 
     	added_by = $6 WHERE id = $7
 		`, ir.dbSchema, ir.dbTable)
@@ -86,7 +86,7 @@ func (ir PostgresqlDb) UpdateItem(ctx context.Context, item models.Item) error {
 }
 
 // DeleteItem deletes the item from the table
-func (ir PostgresqlDb) DeleteItem(ctx context.Context, item models.Item) error {
+func (ir *PostgresqlDb) DeleteItem(ctx context.Context, item models.Item) error {
 	query := fmt.Sprintf("DELETE FROM %s.%s WHERE id=$1", ir.dbSchema, ir.dbTable)
 
 	_, err := ir.db.ExecContext(ctx, query, item.ID)
