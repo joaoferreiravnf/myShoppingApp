@@ -72,10 +72,13 @@ func customErrorHandler(err error, c echo.Context) {
 		c.Response().Header().Set(echo.HeaderWWWAuthenticate, `Basic realm="Restricted"`)
 	}
 
-	c.Render(code, "error.html", map[string]interface{}{
+	err = c.Render(code, "error.html", map[string]interface{}{
 		"status":  "error",
 		"message": message,
 	})
+	if err != nil {
+		return
+	}
 }
 
 type TemplateRenderer struct {

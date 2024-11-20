@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -58,7 +58,7 @@ func HandleGoogleCallback(c *gin.Context) {
 	}
 	defer response.Body.Close()
 
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Printf("failed reading response body: %s\n", err.Error())
 		c.Redirect(http.StatusTemporaryRedirect, "/")
