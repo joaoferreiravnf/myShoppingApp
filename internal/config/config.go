@@ -4,10 +4,10 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"github.com/getsops/sops/v3/decrypt"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
-	"os/exec"
 )
 
 type Config struct {
@@ -32,8 +32,7 @@ type DatabaseConfig struct {
 }
 
 func LoadConfigs(filePath string) (*Config, error) {
-	cmd := exec.Command("sops", "-d", filePath)
-	output, err := cmd.Output()
+	output, err := decrypt.File(filePath, "yaml")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decrypt secrets with sops")
 	}

@@ -30,13 +30,13 @@ const itemQuantities = 10
 
 // Item is the struct for the market item
 type Item struct {
-	ID       int    `db:"id"`
-	Name     string `db:"name"`
-	Quantity int    `db:"qty"`
-	Type     string `db:"type"`
-	Market   string `db:"market"`
-	AddedAt  string `db:"added_at"`
-	AddedBy  string `db:"added_by"`
+	ID       int    `db:"id" json:"id"`
+	Name     string `db:"name" json:"name"`
+	Quantity int    `db:"qty" json:"qty"`
+	Type     string `db:"type" json:"type"`
+	Market   string `db:"market" json:"market"`
+	AddedAt  string `db:"added_at" json:"added_at"`
+	AddedBy  string `db:"added_by" json:"added_by"`
 }
 
 func (i *Item) NormalizeFieldsForPersistence() error {
@@ -61,7 +61,7 @@ func (i *Item) NormalizeFieldsForPersistence() error {
 		return errors.Wrap(err, "unable to normalize 'market' field")
 	}
 
-	i.AddedAt = time.Now().Format("02-01-2006")
+	i.AddedAt = time.Now().Format("02-01")
 
 	i.AddedBy, err = normalizeMandatoryStrings(i.AddedBy)
 	if err != nil {
@@ -91,10 +91,10 @@ func normalizeMandatoryStrings(str string) (string, error) {
 }
 
 type ListItemsData struct {
-	Items      []Item
-	Markets    []string
-	Types      []string
-	Quantities []int
+	Items      []Item   `json:"item"`
+	Markets    []string `json:"markets"`
+	Types      []string `json:"types"`
+	Quantities []int    `json:"quantities"`
 }
 
 func (lid *ListItemsData) GetMarkets() {

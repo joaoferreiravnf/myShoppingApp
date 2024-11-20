@@ -1,8 +1,16 @@
 # Stage 1: Build the Go application
 FROM golang:1.23.0-alpine AS build
 
+# Set environment variables for cross-compiling
+ENV CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
 # Set the working directory inside the container
 WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache git
 
 # Copy go.mod and go.sum files to the workspace
 COPY go.mod go.sum ./
@@ -19,6 +27,9 @@ RUN go build -o myShoppingApp
 # Stage 2: Create a lightweight container to run the application
 FROM alpine:latest
 
+# Install runtime dependencies
+RUN apk add --no-cache ca-certificates curl bash sops
+
 # Set the working directory in the new container
 WORKDIR /root/
 
@@ -28,6 +39,7 @@ COPY --from=build /app/myShoppingApp .
 # Copy the views and internal directories from the 'build' stage
 COPY --from=build /app/views /root/views
 COPY --from=build /app/internal /root/internal
+COPY --from=build /app/secrets.yaml /root/secrets.yaml
 
 # Expose port 8080 to the host
 EXPOSE 8080

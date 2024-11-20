@@ -26,7 +26,7 @@ func TestPostgresqlDb_CreateItem(t *testing.T) {
 		Quantity: 2,
 		Type:     "Fruit",
 		Market:   "Test Market",
-		AddedAt:  time.Now(),
+		AddedAt:  time.Now().Format("02-01"),
 		AddedBy:  "Tester",
 	}
 
@@ -78,7 +78,7 @@ func TestPostgresqlDb_DeleteItem(t *testing.T) {
 		Quantity: 2,
 		Type:     "Fruit",
 		Market:   "Test Market",
-		AddedAt:  time.Now(),
+		AddedAt:  time.Now().Format("02-01"),
 		AddedBy:  "Tester",
 	}
 
