@@ -17,7 +17,7 @@ jobs:
       - name: Set up go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22.1'  # Specify your Go version
+          go-version: '1.22.1'
 
       - name: Install Dependencies
         run: go mod download
@@ -29,7 +29,7 @@ jobs:
         run: docker build -t ${{ env.IMAGE_NAME }} .
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -38,12 +38,10 @@ jobs:
         run: docker push ${{ env.IMAGE_NAME }}
 
       - name: Deploy to Render
-        if: success()
-        run: |
-          curl -X POST \
-          -H "Accept: application/json" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -d '{}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
     env:
       IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}
