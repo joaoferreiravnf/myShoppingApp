@@ -37,13 +37,12 @@ jobs:
       - name: Push Docker Image
         run: docker push ${{ env.IMAGE_NAME }}
 
-      - name: Deploy to Render
-        run: |
-          curl -X POST \
-          -H "Accept: application/json" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -d '{"image": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+      - name: Render Deployment
+        uses: sws2apps/render-deployment@v1.8.0
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          multipleDeployment: false
 
     env:
       IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}
