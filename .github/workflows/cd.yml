@@ -40,9 +40,10 @@ jobs:
       - name: Render Deployment
         uses: sws2apps/render-deployment@v1.8.0
         with:
+          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
           multipleDeployment: false
 
     env:
-      IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:latest
+      IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}
