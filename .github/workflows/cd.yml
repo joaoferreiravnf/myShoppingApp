@@ -45,4 +45,4 @@ jobs:
           multipleDeployment: false
 
     env:
-      IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:${{ github.sha }}
+      IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/my-shopping-app:latest
