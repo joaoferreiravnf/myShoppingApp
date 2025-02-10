@@ -1,32 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const ItemTable = ({ items, handleDelete }) => {
+const ItemList = () => {
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        // Fetch items from the backend
+        fetch("http://localhost:8080/items") // Adjust the endpoint if needed
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setItems(data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setError(error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
+
     return (
-        <table className="table table-striped table-hover">
+        <table>
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Quantity</th>
+                <th>Qty</th>
                 <th>Type</th>
                 <th>Market</th>
-                <th>Added At</th>
-                <th>Added By</th>
+                <th>When</th>
+                <th>Who</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            {items.map((item) => (
-                <tr key={item.id}>
+            {items.map((item, index) => (
+                <tr key={index}>
                     <td>{item.name}</td>
-                    <td>{item.qty}</td>
+                    <td>{item.quantity}</td>
                     <td>{item.type}</td>
                     <td>{item.market}</td>
-                    <td>{item.added_at}</td>
-                    <td>{item.added_by}</td>
+                    <td>{item.when}</td>
+                    <td>{item.who}</td>
                     <td>
                         <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => {
+                                handleDelete(item.id);
+                            }}
+                            style={{ backgroundColor: "red", color: "white" }}
                         >
                             Delete
                         </button>
@@ -38,4 +66,18 @@ const ItemTable = ({ items, handleDelete }) => {
     );
 };
 
-export default ItemTable;
+const handleDelete = (id) => {
+    fetch(`/items/${id}`, { method: "DELETE" })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Failed to delete item");
+            }
+            alert("Item deleted successfully!");
+            window.location.reload(); // Reload the page
+        })
+        .catch((error) => {
+            console.error("Error deleting item:", error);
+        });
+};
+
+export default ItemList;

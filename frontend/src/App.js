@@ -3,10 +3,32 @@ import ItemTable from "./components/ItemTable";
 import AddItemForm from "./components/AddItemForm";
 
 const App = () => {
+    const { isAuthenticated, isLoading } = useAuth0();
+    if (isLoading) return <p>Loading...</p>;
+    if (!isAuthenticated) {
+        return <LoginPage />;
+    }
+
+    return (
+        <div className="container">
+            <h1>Items</h1>
+            <ItemTable />
+            <AddItemForm />
+        </div>
+    );
     const [items, setItems] = useState([]);
     const [markets, setMarkets] = useState([]);
     const [types, setTypes] = useState([]);
     const [quantities, setQuantities] = useState([]);
+    const LogoutButton = () => {
+        const { logout } = useAuth0();
+
+        return (
+            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                Log Out
+            </button>
+        );
+    };
 
     useEffect(() => {
         const fetchItems = async () => {

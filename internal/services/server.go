@@ -29,12 +29,17 @@ func NewAppServer(repo *repository.PostgresqlDb, configs *config.Config) *AppSer
 		configs,
 	}
 
-	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("views/*.html")),
-	}
-	newServer.echo.Renderer = renderer
+	/*	renderer := &TemplateRenderer{
+			templates: template.Must(template.ParseGlob("views/*.html")),
+		}
+		newServer.echo.Renderer = renderer*/
 
 	newServer.echo.HTTPErrorHandler = customErrorHandler
+
+	newEcho.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPut},
+	}))
 
 	newServer.echo.Use(middleware.Logger())
 	basicAuth := newServer.basicAuth()
@@ -44,6 +49,10 @@ func NewAppServer(repo *repository.PostgresqlDb, configs *config.Config) *AppSer
 	itemGroup.GET("", newServer.ListItems)
 	itemGroup.POST("/create", newServer.CreateItem)
 	itemGroup.POST("/delete/:id", newServer.DeleteItem)
+
+	// Serve React App for all other routes
+	newEcho.Static("/", "./frontend/build") // Path to React's build folder
+	newEcho.File("/*", "./frontend/build/index.html")
 
 	return newServer
 }
@@ -107,7 +116,7 @@ func (s *AppServer) ListItems(c echo.Context) error {
 	listData.GetMarkets()
 	listData.GetQuantities()
 
-	return c.Render(http.StatusOK, "list_items.html", listData)
+	return c.JSON(http.StatusOK, listData.Items)
 }
 
 func (s *AppServer) CreateItem(c echo.Context) error {
